@@ -10,9 +10,12 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+        FXMLLoader fxmlLoader = new FXMLLoader();
         Parent root = FXMLLoader.load(getClass().getResource("CurrencyCalc.fxml"));
-        primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root, 300, 275));
+        primaryStage.setTitle("Cross Currency Calculator");
+        Scene mainScene = new Scene(root, 1280.0, 800.0);
+        mainScene.setRoot(root);
+        primaryStage.setScene(mainScene);
         primaryStage.show();
     }
 
