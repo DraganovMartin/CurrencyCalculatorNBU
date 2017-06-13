@@ -1,14 +1,26 @@
 package sample;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.util.StringConverter;
+import javafx.util.converter.NumberStringConverter;
 import model.CurrencyManager;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Scanner;
 
 
 public class CurrencyCalcController {
@@ -41,31 +53,31 @@ public class CurrencyCalcController {
     private Tab currencyTableTab;
 
     @FXML
-    private TableView<?> tableViewContent;
+    private TableView<CurrencyManager.Currency> tableViewContent;
 
     @FXML
-    private TableColumn<?, ?> descTableTab;
+    private TableColumn<CurrencyManager.Currency, String> descTableTab;
 
     @FXML
-    private TableColumn<?, ?> codeTableTab;
+    private TableColumn<CurrencyManager.Currency, String> codeTableTab;
 
     @FXML
-    private TableColumn<?, ?> rateTableTab;
+    private TableColumn<CurrencyManager.Currency, String> rateTableTab;
 
     @FXML
     private Tab updateTableTab;
 
     @FXML
-    private TableView<?> tableViewContent1;
+    private TableView<CurrencyManager.Currency> tableViewContent1;
 
     @FXML
-    private TableColumn<?, ?> descTableTab1;
+    private TableColumn<CurrencyManager.Currency, String> descTableTab1;
 
     @FXML
-    private TableColumn<?, ?> codeTableTab1;
+    private TableColumn<CurrencyManager.Currency, String> codeTableTab1;
 
     @FXML
-    private TableColumn<?, ?> rateTableTab1;
+    private TableColumn<CurrencyManager.Currency, String> rateTableTab1;
 
     @FXML
     private Button commitBtn;
@@ -80,6 +92,12 @@ public class CurrencyCalcController {
     private Button exitBtn;
 
     private CurrencyManager manager = CurrencyManager.getInstance();
+    private ArrayList<CurrencyManager.Currency> backUpData;
+
+    private void backUpTableData(){
+        backUpData = new ArrayList<>();
+        manager.getCurrenciesList().forEach(x -> backUpData.add(CurrencyManager.createCurrency(x.getDescription(),x.getCode(),String.valueOf(x.getRate()),x.getImagePath())));
+    }
 
     @FXML
     public void initialize() {
@@ -87,6 +105,8 @@ public class CurrencyCalcController {
         setLeftFlag(manager.getImagePath(manager.getCurrencies().first()));
         rightCurrencyCB.setItems(FXCollections.observableList(manager.getCodeValues()));
         setRightFlag(manager.getImagePath(manager.getCurrencies().first()));
+        backUpTableData();
+        initializeTables();
     }
 
     @FXML
@@ -94,8 +114,9 @@ public class CurrencyCalcController {
         double inputValue = Double.parseDouble(leftValueTF.getText());
         String leftCurrCode = leftCurrencyCB.getValue();
         String rightCurrCode = rightCurrencyCB.getValue();
-        double leftValue = manager.getCurrenciesList().get(leftCurrencyCB.getSelectionModel().getSelectedIndex()).getRate() * inputValue;
-        double rightValue = manager.getCurrenciesList().get(rightCurrencyCB.getSelectionModel().getSelectedIndex()).getRate() * inputValue;
+
+        double leftValue = Double.parseDouble(manager.getCurrenciesList().get(leftCurrencyCB.getSelectionModel().getSelectedIndex()).getRate()) * inputValue;
+        double rightValue = Double.parseDouble(manager.getCurrenciesList().get(rightCurrencyCB.getSelectionModel().getSelectedIndex()).getRate()) * inputValue;
         double convertedValue = (leftValue-rightValue) + inputValue;
         rightValueTF.setText(String.valueOf(convertedValue));
     }
@@ -133,4 +154,83 @@ public class CurrencyCalcController {
         rightFlag.setImage(new Image(leftImage.toURI().toString()));
     }
 
+
+    @FXML
+    public void commitTableData(TableColumn.CellEditEvent<CurrencyManager.Currency, String> currencyStringCellEditEvent) {
+        if (currencyStringCellEditEvent.getSource().equals(descTableTab1)) {
+            descTableTab1.getTableView().getItems().get(currencyStringCellEditEvent.getTablePosition().getRow()).descriptionProperty().set(currencyStringCellEditEvent.getNewValue());
+        }
+        else if (currencyStringCellEditEvent.getSource().equals(codeTableTab1)){
+            codeTableTab1.getTableView().getItems().get(currencyStringCellEditEvent.getTablePosition().getRow()).codeProperty().set(currencyStringCellEditEvent.getNewValue());
+        }
+        else {
+            rateTableTab1.getTableView().getItems().get(currencyStringCellEditEvent.getTablePosition().getRow()).rateProperty().set(currencyStringCellEditEvent.getNewValue());
+        }
+    }
+
+
+    private void initializeTables(){
+        ObservableList<CurrencyManager.Currency> data = FXCollections.observableArrayList(manager.getCurrenciesList());
+        descTableTab.setCellValueFactory(cellData -> cellData.getValue().descriptionProperty());
+        codeTableTab.setCellValueFactory(cellData -> cellData.getValue().codeProperty());
+        rateTableTab.setCellValueFactory(cellData -> cellData.getValue().rateProperty());
+        tableViewContent.setItems(data);
+
+        descTableTab1.setCellFactory(TextFieldTableCell.forTableColumn());
+        descTableTab1.setCellValueFactory(cellData -> cellData.getValue().descriptionProperty());
+        descTableTab1.setEditable(true);
+
+        codeTableTab1.setCellFactory(TextFieldTableCell.forTableColumn());
+        codeTableTab1.setCellValueFactory(cellData -> cellData.getValue().codeProperty());
+        codeTableTab1.setEditable(true);
+
+        rateTableTab1.setCellFactory(TextFieldTableCell.forTableColumn());
+        rateTableTab1.setCellValueFactory(cellData -> cellData.getValue().rateProperty());
+        rateTableTab1.setEditable(true);
+        tableViewContent1.setItems(data);
+        tableViewContent1.setEditable(true);
+        tableViewContent1.refresh();
+    }
+
+    @FXML
+    public void saveTableChanges(ActionEvent actionEvent) {
+        backUpData.clear();
+        manager.getCurrenciesList().forEach(x -> backUpData.add(manager.createCurrency(x.getDescription(),x.getCode(),x.getRate(),x.getImagePath())));
+        backUpData.forEach(x -> System.out.println(x.getDescription()));
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Table Information");
+        alert.setHeaderText("Table changes applied successfully !");
+
+        alert.showAndWait();
+    }
+
+    @FXML
+    public void cancelTableData(ActionEvent actionEvent) {
+        manager.getCurrenciesList().clear();
+        backUpData.forEach(x -> manager.getCurrenciesList().add(manager.createCurrency(x.getDescription(),x.getCode(),x.getRate(),x.getImagePath())));
+        tableViewContent.setItems(FXCollections.observableArrayList(manager.getCurrenciesList()));
+        tableViewContent1.setItems(FXCollections.observableArrayList(manager.getCurrenciesList()));
+        tableViewContent.refresh();
+        tableViewContent1.refresh();
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Table Information");
+        alert.setHeaderText("Table changes discarded !");
+
+        alert.showAndWait();
+    }
+
+//    @FXML
+//    public void saveTableToFile(ActionEvent actionEvent) {
+//        File file = new File("table.tb");
+//        ObjectOutputStream os = null;
+//        try {
+//            os = new ObjectOutputStream(new FileOutputStream(file));
+//           os.writeObject(manager.getCurrenciesList());
+//           os.flush();
+//           os.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
 }

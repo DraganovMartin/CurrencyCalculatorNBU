@@ -67,14 +67,14 @@
                      <children>
                         <TableView fx:id="tableViewContent1" layoutX="525.0" layoutY="158.0" prefHeight="386.0" prefWidth="642.0">
                            <columns>
-                              <TableColumn fx:id="descTableTab1" prefWidth="209.0" text="Description" />
-                              <TableColumn fx:id="codeTableTab1" prefWidth="252.0" text="Code" />
-                              <TableColumn fx:id="rateTableTab1" prefWidth="180.0" text="Rate" />
+                              <TableColumn fx:id="descTableTab1" onEditCommit="#commitTableData" prefWidth="209.0" text="Description" />
+                              <TableColumn fx:id="codeTableTab1" onEditCommit="#commitTableData" prefWidth="252.0" text="Code" />
+                              <TableColumn fx:id="rateTableTab1" onEditCommit="#commitTableData" prefWidth="180.0" text="Rate" />
                            </columns>
                         </TableView>
-                        <Button fx:id="commitBtn" layoutX="165.0" layoutY="206.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="170.0" text="Commit" />
-                        <Button fx:id="DiscardBtn" layoutX="165.0" layoutY="331.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="170.0" text="Discard" />
-                        <Button fx:id="saveAsBtn" layoutX="165.0" layoutY="454.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="170.0" text="Save As" />
+                        <Button fx:id="commitBtn" layoutX="165.0" layoutY="206.0" mnemonicParsing="false" onAction="#saveTableChanges" prefHeight="41.0" prefWidth="170.0" text="Commit" />
+                        <Button fx:id="DiscardBtn" layoutX="165.0" layoutY="331.0" mnemonicParsing="false" onAction="#cancelTableData" prefHeight="41.0" prefWidth="170.0" text="Discard" />
+                        <Button fx:id="saveAsBtn" layoutX="165.0" layoutY="454.0" mnemonicParsing="false" onAction="#saveTableToFile" prefHeight="41.0" prefWidth="170.0" text="Save As" />
                      </children>
                   </AnchorPane>
               </content>

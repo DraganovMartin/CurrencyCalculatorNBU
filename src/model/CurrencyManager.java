@@ -1,6 +1,10 @@
 package model;
 
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
+
 import java.io.File;
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -11,7 +15,7 @@ import java.util.TreeSet;
 /**
  * Created by DevM on 6/9/2017.
  */
-public class CurrencyManager {
+public class CurrencyManager implements Serializable{
     private static CurrencyManager ourInstance = new CurrencyManager();
 
     public static CurrencyManager getInstance() {
@@ -22,7 +26,7 @@ public class CurrencyManager {
     private TreeSet<Currency> currencies;
 
     private CurrencyManager() {
-        currencies  = new TreeSet<>((o1, o2) -> o1.code.compareTo(o2.code));
+        currencies  = new TreeSet<>((o1, o2) -> o1.code.getValue().compareTo(o2.code.getValue()));
         codeValues = new ArrayList<>();
         loadCurrenciesFromDB();
         currenciesList = new ArrayList<>(currencies);
@@ -38,7 +42,7 @@ public class CurrencyManager {
     }
 
     private void populateCodeValues(){
-        currencies.forEach(x -> codeValues.add(x.code));
+        currencies.forEach(x -> codeValues.add(x.code.getValue()));
     }
 
     private void loadCurrenciesFromDB(){
@@ -56,7 +60,7 @@ public class CurrencyManager {
 
                 String desc = rSet.getString("Description");
                 String code = rSet.getString("Code");
-                double rate = rSet.getDouble("Rate");
+                String rate = rSet.getString("Rate");
                 String image = rSet.getString("Image");
                 currencies.add(new Currency(desc,code,rate,image));
 
@@ -67,32 +71,61 @@ public class CurrencyManager {
     }
 
     public String getImagePath(Currency x){
-        return x.imagePath;
+        return x.getImagePath();
     }
 
     public ArrayList<Currency> getCurrenciesList() {
         return currenciesList;
     }
 
-    public class Currency{
-        String description;
-        String code;
-        double rate;
-        String imagePath;
+    public static Currency createCurrency(String description, String code, String rate, String imageName){
+        return new Currency(description, code, rate, imageName);
+    }
 
-        private Currency(String description, String code, double rate, String imageName){
-            this.description = description;
-            this.code = code;
-            this. rate = rate;
-            this.imagePath = "Icons\\"+imageName;
+    public static class Currency implements Serializable{
+        private SimpleStringProperty description;
+        private SimpleStringProperty code;
+        private SimpleStringProperty rate;
+        private SimpleStringProperty imagePath;
+
+        private Currency(String description, String code, String rate, String imageName){
+            this.description = new SimpleStringProperty(description);
+            this.code = new SimpleStringProperty(code);
+            this.rate = new SimpleStringProperty(rate);
+            this.imagePath = new SimpleStringProperty("Icons\\"+imageName);
+        }
+
+        public String getDescription() {
+            return description.get();
+        }
+
+        public SimpleStringProperty descriptionProperty() {
+            return description;
+        }
+
+        public String getCode() {
+            return code.get();
+        }
+
+        public SimpleStringProperty codeProperty() {
+            return code;
+        }
+
+        public String getRate() {
+            return rate.get();
+        }
+
+        public SimpleStringProperty rateProperty() {
+            return rate;
         }
 
         public String getImagePath() {
+            return imagePath.get();
+        }
+
+        public SimpleStringProperty imagePathProperty() {
             return imagePath;
         }
 
-        public double getRate() {
-            return rate;
-        }
     }
 }
