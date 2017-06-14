@@ -9,16 +9,15 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
 import javafx.util.StringConverter;
 import javafx.util.converter.NumberStringConverter;
 import model.CurrencyManager;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Scanner;
 
@@ -90,6 +89,10 @@ public class CurrencyCalcController {
 
     @FXML
     private Button exitBtn;
+
+    @FXML
+    private MenuItem openFileMenuItem;
+
 
     private CurrencyManager manager = CurrencyManager.getInstance();
     private ArrayList<CurrencyManager.Currency> backUpData;
@@ -219,18 +222,75 @@ public class CurrencyCalcController {
         alert.showAndWait();
     }
 
-//    @FXML
-//    public void saveTableToFile(ActionEvent actionEvent) {
-//        File file = new File("table.tb");
-//        ObjectOutputStream os = null;
-//        try {
-//            os = new ObjectOutputStream(new FileOutputStream(file));
-//           os.writeObject(manager.getCurrenciesList());
-//           os.flush();
-//           os.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
+    @FXML
+    public void saveTableToFile(ActionEvent actionEvent) {
+        File file = new File("table.csv");
+        StringBuilder data = new StringBuilder();
+        manager.getCurrenciesList().forEach(x -> data.append(x.getDescription()+","+x.getCode()+","+x.getRate()+","+x.getImagePath()+"\n"));
+        String toSave = data.toString();
+        DataOutputStream os = null;
+        try {
+            os = new DataOutputStream(new FileOutputStream(file));
+           os.writeUTF(toSave);
+           os.flush();
+           os.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @FXML
+    public void newTable(ActionEvent actionEvent) {
+        manager.getCurrenciesList().forEach(x -> {
+            x.descriptionProperty().set("data");
+            x.rateProperty().set("0.0");
+            x.codeProperty().set("data");
+        });
+    }
+
+    @FXML
+    public void openTableFile(ActionEvent actionEvent) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open Resource File");
+        File selected = fileChooser.showOpenDialog(openFileMenuItem.getParentMenu().getParentPopup());
+        if (selected != null){
+            manager.getCurrenciesList().clear();
+            try {
+                Scanner scanner = new Scanner(new FileInputStream(selected));
+                while (scanner.hasNext()){
+                    String line = scanner.nextLine();
+                    String[] data = line.split(",");
+                    if (data[0].contains(")")){
+                        data[0] = data[0].substring(2);
+                    }
+                    System.out.println(data[0] + " " +data[1] + " " +data[2] + " " +data[3]);
+
+                    manager.getCurrenciesList().add(CurrencyManager.createCurrency(data[0],data[1],data[2],data[3]));
+                }
+                tableViewContent.setItems(FXCollections.observableArrayList(manager.getCurrenciesList()));
+                tableViewContent1.setItems(FXCollections.observableArrayList(manager.getCurrenciesList()));
+                tableViewContent.refresh();
+                tableViewContent1.refresh();
+                CurrencyManager.refreshTreeSetCurrencies(manager.getCurrenciesList());
+
+                leftCurrencyCB.setItems(FXCollections.observableList(manager.getCodeValues()));
+                rightCurrencyCB.setItems(FXCollections.observableArrayList(manager.getCodeValues()));
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Load Information");
+                alert.setHeaderText("Table loaded successfully and changes applied !");
+
+                alert.showAndWait();
+            } catch (IOException e) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Load Information");
+                alert.setHeaderText("Loading table data error!");
+
+                alert.showAndWait();
+                e.printStackTrace();
+            }
+        }
+
+    }
 }

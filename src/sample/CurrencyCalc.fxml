@@ -6,7 +6,6 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.RadioMenuItem?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -48,9 +47,7 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <RadioButton layoutX="126.0" layoutY="288.0" mnemonicParsing="false" text="BGN/Currency" AnchorPane.bottomAnchor="396.0" AnchorPane.rightAnchor="1037.0" />
-                        <RadioButton layoutX="126.0" layoutY="367.0" mnemonicParsing="false" text="Currency/BGN" />
-                        <TableView fx:id="tableViewContent" layoutX="516.0" layoutY="158.0" prefHeight="386.0" prefWidth="642.0">
+                        <TableView fx:id="tableViewContent" layoutX="309.0" layoutY="158.0" prefHeight="386.0" prefWidth="642.0">
                           <columns>
                             <TableColumn fx:id="descTableTab" prefWidth="209.0" text="Description" />
                             <TableColumn fx:id="codeTableTab" prefWidth="252.0" text="Code" />
@@ -74,7 +71,7 @@
                         </TableView>
                         <Button fx:id="commitBtn" layoutX="165.0" layoutY="206.0" mnemonicParsing="false" onAction="#saveTableChanges" prefHeight="41.0" prefWidth="170.0" text="Commit" />
                         <Button fx:id="DiscardBtn" layoutX="165.0" layoutY="331.0" mnemonicParsing="false" onAction="#cancelTableData" prefHeight="41.0" prefWidth="170.0" text="Discard" />
-                        <Button fx:id="saveAsBtn" layoutX="165.0" layoutY="454.0" mnemonicParsing="false" onAction="#saveTableToFile" prefHeight="41.0" prefWidth="170.0" text="Save As" />
+                        <Button fx:id="saveAsBtn" layoutX="165.0" layoutY="454.0" mnemonicParsing="false" onAction="#saveTableToFile" prefHeight="41.0" prefWidth="170.0" text="Save" />
                      </children>
                   </AnchorPane>
               </content>
@@ -85,8 +82,8 @@
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-              <MenuItem mnemonicParsing="false" text="New CurrencyTable" />
-                  <MenuItem mnemonicParsing="false" text="Open Currency Table" />
+              <MenuItem mnemonicParsing="false" onAction="#newTable" text="New CurrencyTable" />
+                  <MenuItem fx:id="openFileMenuItem" mnemonicParsing="false" onAction="#openTableFile" text="Open Currency Table" />
                   <MenuItem mnemonicParsing="false" onAction="#exit" text="Exit" />
             </items>
           </Menu>

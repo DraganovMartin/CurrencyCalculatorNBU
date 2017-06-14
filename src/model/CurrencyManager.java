@@ -10,6 +10,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeSet;
 
 /**
@@ -23,7 +24,7 @@ public class CurrencyManager implements Serializable{
     }
     private ArrayList<String> codeValues;
     private ArrayList<Currency> currenciesList;
-    private TreeSet<Currency> currencies;
+    private static TreeSet<Currency> currencies;
 
     private CurrencyManager() {
         currencies  = new TreeSet<>((o1, o2) -> o1.code.getValue().compareTo(o2.code.getValue()));
@@ -43,6 +44,11 @@ public class CurrencyManager implements Serializable{
 
     private void populateCodeValues(){
         currencies.forEach(x -> codeValues.add(x.code.getValue()));
+    }
+
+    public static void refreshTreeSetCurrencies(List<Currency> currenciesList) {
+        currencies = new TreeSet<>((o1, o2) -> o1.code.getValue().compareTo(o2.code.getValue()));
+        currenciesList.forEach(x -> currencies.add(new Currency(x.getDescription(),x.getCode(),x.getRate(),x.getImagePath())));
     }
 
     private void loadCurrenciesFromDB(){
