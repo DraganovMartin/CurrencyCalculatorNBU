@@ -93,6 +93,12 @@ public class CurrencyCalcController {
     @FXML
     private MenuItem openFileMenuItem;
 
+    @FXML
+    private MenuItem defaultTheme;
+
+    @FXML
+    private MenuItem darkTheme;
+
 
     private CurrencyManager manager = CurrencyManager.getInstance();
     private ArrayList<CurrencyManager.Currency> backUpData;
@@ -264,7 +270,7 @@ public class CurrencyCalcController {
                     if (data[0].contains(")")){
                         data[0] = data[0].substring(2);
                     }
-                    System.out.println(data[0] + " " +data[1] + " " +data[2] + " " +data[3]);
+                    //System.out.println(data[0] + " " +data[1] + " " +data[2] + " " +data[3]);
 
                     manager.getCurrenciesList().add(CurrencyManager.createCurrency(data[0],data[1],data[2],data[3]));
                 }
@@ -291,6 +297,10 @@ public class CurrencyCalcController {
                 e.printStackTrace();
             }
         }
+
+    }
+
+    public void changeSkin(ActionEvent actionEvent) {
 
     }
 }

@@ -89,9 +89,8 @@
           </Menu>
           <Menu mnemonicParsing="false" text="L&amp;F">
                <items>
-                  <RadioMenuItem mnemonicParsing="false" text="Metal" />
-                  <RadioMenuItem mnemonicParsing="false" text="Motif" />
-                  <RadioMenuItem mnemonicParsing="false" text="Windows" />
+                  <RadioMenuItem fx:id="defaultTheme" mnemonicParsing="false" onAction="#changeSkin" text="Default" />
+                  <RadioMenuItem fx:id="darkTheme" mnemonicParsing="false" onAction="#changeSkin" text="Dark" />
                </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Help">
