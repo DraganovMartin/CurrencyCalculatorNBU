@@ -8,6 +8,8 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
+    public static Scene scene;
+
     @Override
     public void start(Stage primaryStage) throws Exception{
         FXMLLoader fxmlLoader = new FXMLLoader();
@@ -16,6 +18,7 @@ public class Main extends Application {
         Scene mainScene = new Scene(root, 1280.0, 800.0);
         mainScene.setRoot(root);
         primaryStage.setScene(mainScene);
+        scene = mainScene;
         primaryStage.show();
     }
 

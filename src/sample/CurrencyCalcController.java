@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
@@ -98,7 +99,6 @@ public class CurrencyCalcController {
 
     @FXML
     private MenuItem darkTheme;
-
 
     private CurrencyManager manager = CurrencyManager.getInstance();
     private ArrayList<CurrencyManager.Currency> backUpData;
@@ -301,6 +301,7 @@ public class CurrencyCalcController {
     }
 
     public void changeSkin(ActionEvent actionEvent) {
-
+        System.out.println("change");
+        Main.scene.getStylesheets().add(Main.class.getResource("DarkTheme.css").toExternalForm());
     }
 }
