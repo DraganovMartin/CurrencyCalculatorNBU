@@ -1,5 +1,6 @@
 package sample;
 
+import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -301,7 +302,10 @@ public class CurrencyCalcController {
     }
 
     public void changeSkin(ActionEvent actionEvent) {
-        System.out.println("change");
-        Main.scene.getStylesheets().add(Main.class.getResource("DarkTheme.css").toExternalForm());
+        if ((MenuItem) actionEvent.getSource() == defaultTheme) {
+            Main.scene.getStylesheets().clear();
+        } else if ((MenuItem) actionEvent.getSource() == darkTheme) {
+            Main.scene.getStylesheets().add(Main.class.getResource("DarkTheme.css").toExternalForm());
+        }
     }
 }
